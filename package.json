@@ -1,0 +1,36 @@
+{
+  "name": "hapi-i18next",
+  "version": "1.0.0",
+  "description": "hapijs plugin for i18next",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "node example/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kenkouot/hapi-i18next.git"
+  },
+  "keywords": [
+    "i18n",
+    "hapi",
+    "typescript",
+    "localization"
+  ],
+  "author": "Ken Kouot @kenkouot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kenkouot/hapi-i18next/issues"
+  },
+  "homepage": "https://github.com/kenkouot/hapi-i18next",
+  "dependencies": {
+    "gulp": "^3.8.11",
+    "gulp-typescript": "^2.5.0",
+    "handlebars": "^3.0.0",
+    "hapi": "^8.4.0",
+    "i18next": "^1.7.10",
+    "typescript": "^1.4.1"
+  }
+}
