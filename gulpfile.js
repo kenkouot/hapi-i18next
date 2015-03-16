@@ -4,6 +4,6 @@ var gulp = require('gulp'),
 
 gulp.task('source:compile', function () {
     return gulp.src('./src/hapi-i18next.ts')
-        .pipe(tsc()).js
-        .pipe('./dist');
+        .pipe(tsc({module: 'commonjs'})).js
+        .pipe(gulp.dest('./dist'));
 });

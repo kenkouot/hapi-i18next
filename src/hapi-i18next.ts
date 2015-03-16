@@ -47,6 +47,7 @@ export var register: HapiPluginRegister = function (server, options, next): void
 		var translations = {},
 			cookie: string;
 
+
 		cookie = request.state[options.cookieName || 'i18next'] || null;
 		if (cookie) {
 			if (cookie !== i18n.lng() && i18nextOptions[cookie]) {
