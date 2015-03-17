@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/kenkouot/hapi-i18next",
   "dependencies": {
+    "accept-language-parser": "^1.0.2",
     "gulp": "^3.8.11",
     "gulp-typescript": "^2.5.0",
     "handlebars": "^3.0.0",
