@@ -16,7 +16,8 @@ server.register({
             resGetPath: path.join(__dirname, 'locales/__lng__/__ns__.json'),
             ns: 'translations',
             detectLngFromQueryString: 'lang',
-            cookieName: 'juice',
+            detectLngFromPath: 0,
+            cookieName: 'test',
             supportedLngs: ['en', 'de']
         }
     }

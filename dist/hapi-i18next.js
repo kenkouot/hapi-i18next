@@ -18,7 +18,12 @@ var defaults = {
 exports.register = function (server, options, next) {
     var i18nextOptions = util._extend(defaults, options.i18nextOptions);
     if (i18nextOptions.useCookie) {
-        server.state(i18nextOptions.cookieName, options.cookieOptions || {});
+        server.state(i18nextOptions.cookieName, util._extend({
+            strictHeader: false,
+            isSecure: false,
+            isHttpOnly: false,
+            clearInvalid: true
+        }, options.cookieOptions));
     }
     /**
      * i18n.getInstance
@@ -39,11 +44,11 @@ exports.register = function (server, options, next) {
     i18n.init(i18nextOptions);
     server.ext('onPreHandler', function (request, reply) {
         var translations = {}, headerLang, fromPath, language, temp;
-        if (!language && i18nextOptions.detectLngFromPath) {
+        if (!language && typeof i18nextOptions.detectLngFromPath === 'number') {
             // if force is true, then we set lang even if it is not in supported languages list
             temp = detectLanguageFromPath(request);
             if (i18nextOptions.forceDetectLngFromPath || isLanguageSupported(temp)) {
-                language = fromPath;
+                language = temp;
             }
         }
         if (!language && i18nextOptions.detectLngFromHeaders) {
@@ -56,13 +61,15 @@ exports.register = function (server, options, next) {
             language = trySetLanguage(temp);
         }
         if (!language && i18nextOptions.useCookie) {
+            // Reads language if it was set from previous session or recently by client
             temp = detectLanguageFromCookie(request);
             language = trySetLanguage(temp);
-            if (language) {
-                request.state[i18nextOptions.cookieName] = language;
+            if (!request.state[i18nextOptions.cookieName] || request.state[i18nextOptions.cookieName] !== language) {
+                // if no set cookie is set
+                reply.state(i18nextOptions.cookieName, language || i18n.lng());
             }
         }
-        language = language || i18nextOptions.lng || i18nextOptions.fallbackLng;
+        language = language || i18n.lng();
         if (language !== i18n.lng()) {
             i18n.setLng(language, function () {
                 reply.continue();
@@ -91,16 +98,16 @@ exports.register = function (server, options, next) {
     }
     function detectLanguageFromQS(request) {
         // Use the query param name specified in options, defaults to lang
-        return request.query[options.detectLngQS || 'lang'];
+        return request.query[i18nextOptions.detectLngQS || 'lang'];
     }
     function detectLanguageFromPath(request) {
-        var parts = request.url.path.split('/');
-        if (parts.length > options.detectLngFromPath) {
-            return parts[options.detectLngFromPath];
+        var parts = request.url.path.slice(1).split('/');
+        if (parts.length > i18nextOptions.detectLngFromPath) {
+            return parts[i18nextOptions.detectLngFromPath];
         }
     }
     function detectLanguageFromCookie(request) {
-        return request.state[options.i18nextOptions.cookieName] || null;
+        return request.state[i18nextOptions.cookieName] || null;
     }
     next();
 };

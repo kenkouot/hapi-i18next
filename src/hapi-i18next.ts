@@ -29,7 +29,12 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 	var i18nextOptions: I18nextOptions = util._extend(defaults, options.i18nextOptions);
 
 	if (i18nextOptions.useCookie) {
-		server.state(i18nextOptions.cookieName, options.cookieOptions || {});
+		server.state(i18nextOptions.cookieName, util._extend({
+			strictHeader: false,
+			isSecure: false,
+			isHttpOnly: false,
+			clearInvalid: true
+		}, options.cookieOptions));
 	}
 
 	/**
@@ -59,11 +64,11 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			language: string,
 			temp: string;
 
-		if (!language && i18nextOptions.detectLngFromPath) {
+		if (!language && typeof i18nextOptions.detectLngFromPath === 'number') {
 			// if force is true, then we set lang even if it is not in supported languages list
 			temp = detectLanguageFromPath(request);
 			if (i18nextOptions.forceDetectLngFromPath || isLanguageSupported(temp)) {
-				language = fromPath;
+				language = temp;
 			}
 		}
 
@@ -79,12 +84,17 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 		}
 
 		if (!language && i18nextOptions.useCookie) {
-			// TODO: set up a default cookie or set cookie on req???
+			// Reads language if it was set from previous session or recently by client
 			temp = detectLanguageFromCookie(request);
 			language = trySetLanguage(temp);
+
+			if (!request.state[i18nextOptions.cookieName] || request.state[i18nextOptions.cookieName] !== language) {
+				// if no set cookie is set
+				reply.state(i18nextOptions.cookieName, language || i18n.lng());
+			}
 		}
 
-		language = language || i18nextOptions.lng || i18nextOptions.fallbackLng;
+		language = language || i18n.lng();
 
 		if (language !== i18n.lng()) {
 			i18n.setLng(language, () => {
@@ -120,18 +130,18 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 	function detectLanguageFromQS (request) {
 		// Use the query param name specified in options, defaults to lang
-		return request.query[options.detectLngQS || 'lang'];
+		return request.query[i18nextOptions.detectLngQS || 'lang'];
 	}
 
 	function detectLanguageFromPath (request): string {
-		var parts = request.url.path.split('/');
-		if (parts.length > options.detectLngFromPath) {
-			return parts[options.detectLngFromPath];
+		var parts = request.url.path.slice(1).split('/');
+		if (parts.length > i18nextOptions.detectLngFromPath) {
+			return parts[i18nextOptions.detectLngFromPath];
 		}
 	}
 
 	function detectLanguageFromCookie (request): string {
-		return request.state[options.i18nextOptions.cookieName] || null;
+		return request.state[i18nextOptions.cookieName] || null;
 	}
 
 	next();
