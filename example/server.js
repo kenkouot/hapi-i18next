@@ -14,7 +14,10 @@ server.register({
         // Standard options passed into i18next initialization
         i18nextOptions: {
             resGetPath: path.join(__dirname, 'locales/__lng__/__ns__.json'),
-            ns: 'translations'
+            ns: 'translations',
+            detectLngFromQueryString: 'lang',
+            cookieName: 'juice',
+            supportedLngs: ['en', 'de']
         }
     }
 }, function () {});
@@ -39,7 +42,7 @@ server.views({
 
 server.route({
     method: 'GET',
-    path: '/',
+    path: '/test',
     handler: function (request, reply) {
         reply.view('test');
     }

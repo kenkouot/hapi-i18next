@@ -16,20 +16,21 @@ interface HapiPluginRegister {
 var defaults: I18nextOptions = {
 	supportedLngs: ['en'],
 	fallbackLng: 'en',
-	lng: 'en'
+	lng: 'en',
+	cookieName: 'i18next',
+	useCookie: true,
+	detectLngFromPath: 0,
+	detectLngFromQueryString: false,
+	detectLngFromHeaders: false,
+	forceDetectLngFromPath: false
 };
 
 export var register: HapiPluginRegister = function (server, options: any, next): void {
-    var i18nextOptions: I18nextOptions = util._extend(defaults, options.i18nextOptions);
+	var i18nextOptions: I18nextOptions = util._extend(defaults, options.i18nextOptions);
 
-    i18nextOptions = util._extend(i18nextOptions, {
-        // Support for these features only exist in i18next-node for express, so let's
-        // always set them to false in init, and support them ourselves if they are enabled
-        detectLngFromPath: false,
-        detectLngFromQueryString: false,
-        detectLngFromHeaders: false,
-        forceDetectLngFromPath: false
-    });
+	if (i18nextOptions.useCookie) {
+		server.state(i18nextOptions.cookieName, options.cookieOptions || {});
+	}
 
 	/**
 	 * i18n.getInstance
@@ -53,47 +54,85 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 	server.ext('onPreHandler', (request: Hapi.Request, reply: any): void => {
 		var translations = {},
-            headerLang: any,
-            language: string;
+			headerLang: any,
+			fromPath: string,
+			language: string,
+			temp: string;
 
-        if (!language && options.detectLngFromHeaders) {
-            headerLang = detectLngFromHeaders(request);
-            language = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
-        }
-
-        if (!language && options.useCookie) {
-            language = detectLanguageFromCookie(request);
-        }
-
-        if (!language && options.forceDetectLngFromPath) {}
-        if (!language && options.detectLngFromQueryString) {}
-        if (!language && options.detectLngFromPath) {}
-
-        i18n.setLng(language, () => {
-            return reply.continue();
-        });
-	});
-
-    function detectLngFromHeaders (request) {
-        var langs: any[],
-            langHeader: string = request.headers['accept-language'];
-
-        langs = acceptLanguageParser.parse(langHeader);
-        langs.sort((a, b) => {
-            return b.q - a.q;
-        });
-        return langs;
-    }
-
-    function detectLanguageFromCookie (request) {
-        var cookie = request.state[options.cookieName || 'i18next'] || null;
-		if (cookie) {
-			if (cookie !== i18n.lng() && i18nextOptions[cookie]) {
-				return request.state.i18next;
+		if (!language && i18nextOptions.detectLngFromPath) {
+			// if force is true, then we set lang even if it is not in supported languages list
+			temp = detectLanguageFromPath(request);
+			if (i18nextOptions.forceDetectLngFromPath || isLanguageSupported(temp)) {
+				language = fromPath;
 			}
 		}
-        throw 'Cookie not found!';
-    }
+
+		if (!language && i18nextOptions.detectLngFromHeaders) {
+			headerLang = detectLanguageFromHeaders(request);
+			temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
+			language = trySetLanguage(temp);
+		}
+
+		if (!language && i18nextOptions.detectLngFromQueryString) {
+			temp = detectLanguageFromQS(request);
+			language = trySetLanguage(temp);
+		}
+
+		if (!language && i18nextOptions.useCookie) {
+			// TODO: set up a default cookie or set cookie on req???
+			temp = detectLanguageFromCookie(request);
+			language = trySetLanguage(temp);
+		}
+
+		language = language || i18nextOptions.lng || i18nextOptions.fallbackLng;
+
+		if (language !== i18n.lng()) {
+			i18n.setLng(language, () => {
+				reply.continue();
+			});
+			return;
+		}
+		reply.continue();
+	});
+
+	function trySetLanguage (language): string|typeof undefined {
+		return isLanguageSupported(language) ? language : undefined;
+	}
+
+	function isLanguageSupported (language: string): boolean {
+		var supported: string[] = i18nextOptions.supportedLngs;
+		if ((!supported.length && language) || (supported.indexOf(language) > -1)) {
+			return true;
+		}
+		return false;
+	}
+
+	function detectLanguageFromHeaders (request): any[] {
+		var langs: any[],
+			langHeader: string = request.headers['accept-language'];
+
+		langs = acceptLanguageParser.parse(langHeader);
+		langs.sort((a, b) => {
+			return b.q - a.q;
+		});
+		return langs;
+	}
+
+	function detectLanguageFromQS (request) {
+		// Use the query param name specified in options, defaults to lang
+		return request.query[options.detectLngQS || 'lang'];
+	}
+
+	function detectLanguageFromPath (request): string {
+		var parts = request.url.path.split('/');
+		if (parts.length > options.detectLngFromPath) {
+			return parts[options.detectLngFromPath];
+		}
+	}
+
+	function detectLanguageFromCookie (request): string {
+		return request.state[options.i18nextOptions.cookieName] || null;
+	}
 
 	next();
 };

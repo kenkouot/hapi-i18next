@@ -45,6 +45,11 @@ interface I18nextOptions {
     sendMissing?: boolean;                     // Default value: false
     sendMissingTo?: string;                 // Default value: 'fallback'. Other options are: current | all
     sendType?: string;                      // Default value: 'POST'
+    supportedLngs: string[];                // nodejs only
+    detectLngFromPath?: number;
+    detectLngFromQueryString?: boolean;
+	detectLngFromHeaders?: boolean;
+	forceDetectLngFromPath?: boolean;
 
     interpolationPrefix?: string;           // Default value: '__'
     interpolationSuffix?: string;           // Default value: '__'
