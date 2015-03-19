@@ -40,9 +40,8 @@ server.views({
 });
 ```
 
-In your helper:
-```hbs
-
+In your helper, `t.js`:
+```js
 function i18nHelper(key, options) {
     var translateWithCache = this.i18n.translateWithCache,
         params = {},
