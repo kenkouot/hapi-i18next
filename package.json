@@ -1,6 +1,6 @@
 {
   "name": "hapi-i18next",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "hapijs plugin for i18next",
   "main": "index.js",
   "directories": {
@@ -19,11 +19,7 @@
     "typescript",
     "localization"
   ],
-  "author": {
-        "name": "Kenneth Kouot",
-        "email": "kenkouot at gmail dot com",
-        "url": "https://www.twitter.com/kenkouot"
-  },
+  "author": "Kenneth Kouot <kenkouot at gmail dot com> (https://www.twitter.com/kenkouot)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kenkouot/hapi-i18next/issues"
