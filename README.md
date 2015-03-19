@@ -1,6 +1,10 @@
 # hapi-i18next
 [i18next integration](https://github.com/i18next/i18next-node) for [hapijs](https://github.com/hapijs/hapi)
 
+## Installation
+This plugin is available as an npm module. Simply run: `npm install --save hapi-i18next`.
+
+## Introduction
 This plugin sets up and registers two methods in your hapi server: `server.methods.i18n.getInstance()` and `server.methods.i18n.translateWithCache`. Using hapi server methods allows us to set up caching schemes for the translate method. Examples of how to integrate these server methods into your application:
 ```js
 
@@ -8,7 +12,7 @@ This plugin sets up and registers two methods in your hapi server: `server.metho
 // server.methods.i18n.getInstance
 // server.methods.i18n.translateWithCache
 server.register({
-    register: require('../dist/hapi-i18next'),
+    register: require('hapi-i18next'),
     options: {
         // Standard options passed into i18next initialization http://i18next.com/node/pages/doc_init.html
         i18nextOptions: {
