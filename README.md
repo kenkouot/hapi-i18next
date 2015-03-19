@@ -10,7 +10,7 @@ This plugin sets up and registers two methods in your hapi server: `server.metho
 server.register({
     register: require('../dist/hapi-i18next'),
     options: {
-        // Standard options passed into i18next initialization
+        // Standard options passed into i18next initialization http://i18next.com/node/pages/doc_init.html
         i18nextOptions: {
             resGetPath: path.join(__dirname, 'locales/__lng__/__ns__.json'),
             ns: 'translations',
