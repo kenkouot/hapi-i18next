@@ -19,7 +19,11 @@
     "typescript",
     "localization"
   ],
-  "author": "Ken Kouot @kenkouot",
+  "author": {
+        "name": "Kenneth Kouot",
+        "email": "kenkouot at gmail dot com",
+        "url": "https://www.twitter.com/kenkouot"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kenkouot/hapi-i18next/issues"
@@ -33,5 +37,6 @@
     "hapi": "^8.4.0",
     "i18next": "^1.7.10",
     "typescript": "^1.4.1"
-  }
+  },
+  "devDependencies": {}
 }
