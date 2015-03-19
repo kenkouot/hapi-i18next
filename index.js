@@ -1,1 +1,1 @@
-require('./dist/hapi-i18next');
+module.exports = require('./dist/hapi-i18next');
