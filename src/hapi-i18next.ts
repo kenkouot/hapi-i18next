@@ -72,12 +72,6 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			}
 		}
 
-		if (!language && i18nextOptions.detectLngFromHeaders) {
-			headerLang = detectLanguageFromHeaders(request);
-			temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
-			language = trySetLanguage(temp);
-		}
-
 		if (!language && i18nextOptions.detectLngFromQueryString) {
 			temp = detectLanguageFromQS(request);
 			language = trySetLanguage(temp);
@@ -92,6 +86,12 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 				// if no set cookie is set
 				reply.state(i18nextOptions.cookieName, language || i18n.lng());
 			}
+		}
+
+		if (!language && i18nextOptions.detectLngFromHeaders) {
+			headerLang = detectLanguageFromHeaders(request);
+			temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
+			language = trySetLanguage(temp);
 		}
 
 		language = language || i18n.lng();
