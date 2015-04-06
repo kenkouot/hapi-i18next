@@ -1,6 +1,6 @@
 {
   "name": "hapi-i18next",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "hapijs plugin for i18next",
   "main": "index.js",
   "directories": {

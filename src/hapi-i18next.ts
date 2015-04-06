@@ -22,6 +22,7 @@ var defaults: I18nextOptions = {
 	detectLngFromPath: 0,
 	detectLngFromQueryString: false,
 	detectLngFromHeaders: false,
+	detectLngQS: 'lang',
 	forceDetectLngFromPath: false
 };
 
@@ -72,12 +73,6 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			}
 		}
 
-		if (!language && i18nextOptions.detectLngFromHeaders) {
-			headerLang = detectLanguageFromHeaders(request);
-			temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
-			language = trySetLanguage(temp);
-		}
-
 		if (!language && i18nextOptions.detectLngFromQueryString) {
 			temp = detectLanguageFromQS(request);
 			language = trySetLanguage(temp);
@@ -92,6 +87,12 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 				// if no set cookie is set
 				reply.state(i18nextOptions.cookieName, language || i18n.lng());
 			}
+		}
+
+		if (!language && i18nextOptions.detectLngFromHeaders) {
+			headerLang = detectLanguageFromHeaders(request);
+			temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
+			language = trySetLanguage(temp);
 		}
 
 		language = language || i18n.lng();
@@ -130,7 +131,7 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 	function detectLanguageFromQS (request) {
 		// Use the query param name specified in options, defaults to lang
-		return request.query[i18nextOptions.detectLngQS || 'lang'];
+		return request.query[i18nextOptions.detectLngQS];
 	}
 
 	function detectLanguageFromPath (request): string {
