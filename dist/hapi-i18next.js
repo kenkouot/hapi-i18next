@@ -13,7 +13,7 @@ var defaults = {
     detectLngFromPath: 0,
     detectLngFromQueryString: false,
     detectLngFromHeaders: false,
-    detectLngQS: 'lang',
+    detectLngQS: 'setLng',
     forceDetectLngFromPath: false
 };
 exports.register = function (server, options, next) {
@@ -114,5 +114,5 @@ exports.register = function (server, options, next) {
 };
 exports.register.attributes = {
     name: 'hapi-i18next',
-    version: '0.0.1'
+    version: '2.0.0'
 };
