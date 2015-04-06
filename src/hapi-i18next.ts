@@ -22,7 +22,7 @@ var defaults: I18nextOptions = {
 	detectLngFromPath: 0,
 	detectLngFromQueryString: false,
 	detectLngFromHeaders: false,
-	detectLngQS: 'lang',
+	detectLngQS: 'setLng',
 	forceDetectLngFromPath: false
 };
 
@@ -150,6 +150,6 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 register.attributes = {
 	name: 'hapi-i18next',
-	version: '0.0.1'
+	version: '2.0.0'
 };
 

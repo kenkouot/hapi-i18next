@@ -24,7 +24,7 @@ interface I18nextOptions {
     lowerCaseLng?: boolean;                    // Default value: false
     returnObjectTrees?: boolean;               // Default value: false
     fallbackLng?: string;                   // Default value: 'dev'
-    detectLngQS?: string;                   // Default value: 'lang'
+    detectLngQS?: string;                   // Default value: 'setLng'
     ns?: any;                               // Default value: 'translation' (string), can also be an object
     nsseparator?: string;                   // Default value: '::'
     keyseparator?: string;                  // Default value: '.'
