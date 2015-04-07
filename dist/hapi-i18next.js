@@ -67,8 +67,10 @@ exports.register = function (server, options, next) {
         }
         if (!language && i18nextOptions.detectLngFromHeaders) {
             headerLang = detectLanguageFromHeaders(request);
-            temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
-            language = trySetLanguage(temp);
+            if (headerLang.length) {
+                temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
+                language = trySetLanguage(temp);
+            }
         }
         language = language || i18n.lng();
         if (language !== i18n.lng()) {
@@ -91,11 +93,14 @@ exports.register = function (server, options, next) {
     }
     function detectLanguageFromHeaders(request) {
         var langs, langHeader = request.headers['accept-language'];
-        langs = acceptLanguageParser.parse(langHeader);
-        langs.sort(function (a, b) {
-            return b.q - a.q;
-        });
-        return langs;
+        if (langHeader) {
+            langs = acceptLanguageParser.parse(langHeader);
+            langs.sort(function (a, b) {
+                return b.q - a.q;
+            });
+            return langs;
+        }
+        return [];
     }
     function detectLanguageFromQS(request) {
         // Use the query param name specified in options, defaults to lang

@@ -91,8 +91,10 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 		if (!language && i18nextOptions.detectLngFromHeaders) {
 			headerLang = detectLanguageFromHeaders(request);
-			temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
-			language = trySetLanguage(temp);
+			if (headerLang.length) {
+				temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
+				language = trySetLanguage(temp);
+			}
 		}
 
 		language = language || i18n.lng();
@@ -122,11 +124,15 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 		var langs: any[],
 			langHeader: string = request.headers['accept-language'];
 
-		langs = acceptLanguageParser.parse(langHeader);
-		langs.sort((a, b) => {
-			return b.q - a.q;
-		});
-		return langs;
+		if (langHeader) {
+			langs = acceptLanguageParser.parse(langHeader);
+			langs.sort((a, b) => {
+				return b.q - a.q;
+			});
+			return langs;
+		}
+		
+		return [];
 	}
 
 	function detectLanguageFromQS (request) {
