@@ -63,7 +63,8 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			headerLang: any,
 			fromPath: string,
 			language: string,
-			temp: string;
+			temp: string,
+			cookieLang: string;
 
 		if (!language && typeof i18nextOptions.detectLngFromPath === 'number') {
 			// if force is true, then we set lang even if it is not in supported languages list
@@ -82,23 +83,23 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			// Reads language if it was set from previous session or recently by client
 			temp = detectLanguageFromCookie(request);
 			language = trySetLanguage(temp);
-
-			if (!request.state[i18nextOptions.cookieName] || request.state[i18nextOptions.cookieName] !== language) {
-				// if no set cookie is set
-				reply.state(i18nextOptions.cookieName, language || i18n.lng());
-			}
 		}
 
 		if (!language && i18nextOptions.detectLngFromHeaders) {
 			headerLang = detectLanguageFromHeaders(request);
 			if (headerLang.length) {
-				temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
+				temp = headerLang[0].code + (headerLang[0].region ? '-' + headerLang[0].region : '');
 				language = trySetLanguage(temp);
 			}
 		}
 
 		language = language || i18n.lng();
 
+		cookieLang = request.state[i18nextOptions.cookieName];
+		if (!cookieLang || cookieLang !== language) {
+			// set the language cookie
+			reply.state(i18nextOptions.cookieName, language);
+		}
 		if (language !== i18n.lng()) {
 			i18n.setLng(language, () => {
 				reply.continue();
@@ -131,7 +132,7 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			});
 			return langs;
 		}
-		
+
 		return [];
 	}
 
@@ -158,4 +159,3 @@ register.attributes = {
 	name: 'hapi-i18next',
 	version: '2.0.1'
 };
-
