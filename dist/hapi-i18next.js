@@ -44,7 +44,7 @@ exports.register = function (server, options, next) {
     });
     i18n.init(i18nextOptions);
     server.ext('onPreHandler', function (request, reply) {
-        var translations = {}, headerLang, fromPath, language, temp, cookieLang;
+        var translations = {}, headerLang, fromPath, language, temp;
         if (!language && typeof i18nextOptions.detectLngFromPath === 'number') {
             // if force is true, then we set lang even if it is not in supported languages list
             temp = detectLanguageFromPath(request);
@@ -69,13 +69,11 @@ exports.register = function (server, options, next) {
             }
         }
         language = language || i18n.lng();
-        cookieLang = request.state[i18nextOptions.cookieName];
-        if (!cookieLang || cookieLang !== language) {
-            // set the language cookie
-            reply.state(i18nextOptions.cookieName, language);
-        }
         if (language !== i18n.lng()) {
             i18n.setLng(language, function () {
+                if (i18nextOptions.useCookie) {
+                    reply.state(i18nextOptions.cookieName, language);
+                }
                 reply.continue();
             });
             return;
@@ -120,5 +118,5 @@ exports.register = function (server, options, next) {
 };
 exports.register.attributes = {
     name: 'hapi-i18next',
-    version: '2.0.1'
+    version: '2.0.2'
 };

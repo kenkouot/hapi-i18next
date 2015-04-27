@@ -63,8 +63,7 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			headerLang: any,
 			fromPath: string,
 			language: string,
-			temp: string,
-			cookieLang: string;
+			temp: string;
 
 		if (!language && typeof i18nextOptions.detectLngFromPath === 'number') {
 			// if force is true, then we set lang even if it is not in supported languages list
@@ -95,13 +94,11 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 		language = language || i18n.lng();
 
-		cookieLang = request.state[i18nextOptions.cookieName];
-		if (!cookieLang || cookieLang !== language) {
-			// set the language cookie
-			reply.state(i18nextOptions.cookieName, language);
-		}
 		if (language !== i18n.lng()) {
 			i18n.setLng(language, () => {
+				if (i18nextOptions.useCookie) {
+					reply.state(i18nextOptions.cookieName, language);
+				}
 				reply.continue();
 			});
 			return;
@@ -157,5 +154,5 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 register.attributes = {
 	name: 'hapi-i18next',
-	version: '2.0.1'
+	version: '2.0.2'
 };
