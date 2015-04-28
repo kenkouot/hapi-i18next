@@ -82,17 +82,12 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			// Reads language if it was set from previous session or recently by client
 			temp = detectLanguageFromCookie(request);
 			language = trySetLanguage(temp);
-
-			if (!request.state[i18nextOptions.cookieName] || request.state[i18nextOptions.cookieName] !== language) {
-				// if no set cookie is set
-				reply.state(i18nextOptions.cookieName, language || i18n.lng());
-			}
 		}
 
 		if (!language && i18nextOptions.detectLngFromHeaders) {
 			headerLang = detectLanguageFromHeaders(request);
 			if (headerLang.length) {
-				temp = headerLang[0].code + (headerLang.region ? '-' + headerLang.region : '');
+				temp = headerLang[0].code + (headerLang[0].region ? '-' + headerLang[0].region : '');
 				language = trySetLanguage(temp);
 			}
 		}
@@ -101,6 +96,9 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 		if (language !== i18n.lng()) {
 			i18n.setLng(language, () => {
+				if (i18nextOptions.useCookie) {
+					reply.state(i18nextOptions.cookieName, language);
+				}
 				reply.continue();
 			});
 			return;
@@ -131,7 +129,7 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			});
 			return langs;
 		}
-		
+
 		return [];
 	}
 
@@ -156,6 +154,5 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 register.attributes = {
 	name: 'hapi-i18next',
-	version: '2.0.1'
+	version: '2.0.2'
 };
-
