@@ -31,7 +31,7 @@ exports.register = function (server, options, next) {
      * @description
      */
     server.method('i18n.getInstance', function () {
-        return i18n;
+        return require('i18next');
     });
     /**
      * i18n.translateWithCache

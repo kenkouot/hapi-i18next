@@ -43,7 +43,7 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 	 * @description
 	 */
 	server.method('i18n.getInstance', (): any => {
-		return i18n;
+		return require('i18next');
 	});
 
 	/**
