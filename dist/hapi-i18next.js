@@ -28,7 +28,7 @@ exports.register = function (server, options, next) {
     }
     /**
      * i18n.getInstance
-     * @description
+     * @description Returns fresh i18next instance for each request, to prevent cache pollution
      */
     server.method('i18n.getInstance', function () {
         return require('i18next');

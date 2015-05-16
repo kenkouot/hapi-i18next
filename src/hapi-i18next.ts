@@ -40,7 +40,7 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 	/**
 	 * i18n.getInstance
-	 * @description Returns freash i18next instance for each request, to prevent cache pollution
+	 * @description Returns fresh i18next instance for each request, to prevent cache pollution
 	 */
 	server.method('i18n.getInstance', (): any => {
 		return require('i18next');
