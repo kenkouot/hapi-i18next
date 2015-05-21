@@ -44,7 +44,7 @@ exports.register = function (server, options, next) {
     });
     i18n.init(i18nextOptions);
     server.ext('onPreHandler', function (request, reply) {
-        var translations = {}, headerLang, fromPath, language, temp;
+        var translations = {}, headerLangs, fromPath, language, temp;
         if (!language && typeof i18nextOptions.detectLngFromPath === 'number') {
             // if force is true, then we set lang even if it is not in supported languages list
             temp = detectLanguageFromPath(request);
@@ -62,23 +62,16 @@ exports.register = function (server, options, next) {
             language = trySetLanguage(temp);
         }
         if (!language && i18nextOptions.detectLngFromHeaders) {
-            headerLang = detectLanguageFromHeaders(request);
-            if (headerLang.length) {
-                temp = headerLang[0].code + (headerLang[0].region ? '-' + headerLang[0].region : '');
-                language = trySetLanguage(temp);
-            }
-        }
-        language = language || i18n.lng();
-        if (language !== i18n.lng()) {
-            i18n.setLng(language, function () {
-                if (i18nextOptions.useCookie) {
-                    reply.state(i18nextOptions.cookieName, language);
-                }
-                reply.continue();
+            headerLangs = detectLanguageFromHeaders(request);
+            headerLangs.some(function (headerLang) {
+                language = trySetLanguage(headerLang);
+                return !!language;
             });
-            return;
         }
-        reply.continue();
+        language = language || i18nextOptions.fallbackLng;
+        i18n.setLng(language, function () {
+            reply.continue();
+        });
     });
     function trySetLanguage(language) {
         return isLanguageSupported(language) ? language : undefined;
