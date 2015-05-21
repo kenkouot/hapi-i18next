@@ -60,7 +60,7 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 
 	server.ext('onPreHandler', (request: Hapi.Request, reply: any): void => {
 		var translations = {},
-			headerLang: any,
+			headerLangs: any,
 			fromPath: string,
 			language: string,
 			temp: string;
@@ -84,26 +84,19 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			language = trySetLanguage(temp);
 		}
 
-		if (!language && i18nextOptions.detectLngFromHeaders) {
-			headerLang = detectLanguageFromHeaders(request);
-			if (headerLang.length) {
-				temp = headerLang[0].code + (headerLang[0].region ? '-' + headerLang[0].region : '');
-				language = trySetLanguage(temp);
-			}
-		}
+        if (!language && i18nextOptions.detectLngFromHeaders) {
+            headerLangs = detectLanguageFromHeaders(request);
+            headerLangs.some(function (headerLang): boolean {
+                language = trySetLanguage(headerLang);
+                return !!language;
+            });
+        }
 
-		language = language || i18n.lng();
+        language = language || i18nextOptions.fallbackLng;
 
-		if (language !== i18n.lng()) {
-			i18n.setLng(language, () => {
-				if (i18nextOptions.useCookie) {
-					reply.state(i18nextOptions.cookieName, language);
-				}
-				reply.continue();
-			});
-			return;
-		}
-		reply.continue();
+        i18n.setLng(language, () => {
+            reply.continue();
+        });
 	});
 
 	function trySetLanguage (language): string|typeof undefined {
