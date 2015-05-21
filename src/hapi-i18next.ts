@@ -84,19 +84,19 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			language = trySetLanguage(temp);
 		}
 
-        if (!language && i18nextOptions.detectLngFromHeaders) {
-            headerLangs = detectLanguageFromHeaders(request);
-            headerLangs.some(function (headerLang): boolean {
-                language = trySetLanguage(headerLang);
-                return !!language;
-            });
-        }
+		if (!language && i18nextOptions.detectLngFromHeaders) {
+			headerLangs = detectLanguageFromHeaders(request);
+			headerLangs.some(function (headerLang): boolean {
+				language = trySetLanguage(headerLang);
+				return !!language;
+			});
+		}
 
-        language = language || i18nextOptions.fallbackLng;
+		language = language || i18nextOptions.fallbackLng;
 
-        i18n.setLng(language, () => {
-            reply.continue();
-        });
+		i18n.setLng(language, () => {
+			reply.continue();
+		});
 	});
 
 	function trySetLanguage (language): string|typeof undefined {
