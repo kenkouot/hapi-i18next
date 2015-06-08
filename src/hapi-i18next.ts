@@ -120,7 +120,10 @@ export var register: HapiPluginRegister = function (server, options: any, next):
 			langs.sort((a, b) => {
 				return b.q - a.q;
 			});
-			return langs;
+			
+			return langs.map((lang) => {
+				return lang.code;
+			});
 		}
 
 		return [];
